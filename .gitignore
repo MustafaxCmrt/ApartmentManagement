@@ -1,0 +1,113 @@
+# Build output
+bin/
+obj/
+out/
+artifacts/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+coverage-*/
+lcov.info
+
+# .NET generated files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+
+# NuGet packages and local caches
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# ASP.NET / local configuration
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+appsettings.*.Development.json
+appsettings.*.development.json
+appsettings.Secrets.json
+secrets.json
+*.secrets.json
+
+# User secrets and certificates
+**/secrets/
+**/.microsoft/usersecrets/
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Docker local overrides and generated data
+docker-compose.override.yml
+docker-compose.*.override.yml
+docker-compose.local.yml
+compose.override.yml
+compose.local.yml
+.docker/
+docker-data/
+volumes/
+
+# Database files and local storage
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.bak
+*.dump
+*.mdf
+*.ldf
+
+# Logs
+logs/
+*.log
+
+# IDEs and editors
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Node/frontend dependencies if a UI is added later
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+vite.config.ts.timestamp-*
+vite.config.js.timestamp-*
+
+# Tooling caches
+.cache/
+.pytest_cache/
+.sass-cache/
+*.tmp
+*.temp
