@@ -61,7 +61,8 @@ public static class DatabaseSeeder
                 ContactEmail = "contact@demo.com",
                 ContactPhone = "+90 555 000 0000",
                 Address = "Demo District, Demo Street No:1, Istanbul",
-                CreatedAt = now
+                CreatedAt = now,
+                UpdatedAt = now
             };
             context.Tenants.Add(demoTenant);
             await context.SaveChangesAsync(CancellationToken.None);

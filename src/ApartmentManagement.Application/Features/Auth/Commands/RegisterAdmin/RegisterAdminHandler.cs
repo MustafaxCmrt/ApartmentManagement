@@ -60,7 +60,8 @@ public class RegisterAdminHandler : IRequestHandler<RegisterAdminCommand, Result
             MaxApartmentCount = 50,
             ContactEmail = request.ContactEmail.Trim(),
             ContactPhone = request.ContactPhone?.Trim(),
-            CreatedAt = now
+            CreatedAt = now,
+            UpdatedAt = now
         };
 
         _db.Tenants.Add(tenant);

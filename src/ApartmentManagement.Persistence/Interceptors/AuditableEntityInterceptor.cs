@@ -37,17 +37,22 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         if (context is null) return;
 
+        var now = _dateTime.UtcNow;
+        var userId = _currentUser.UserId;
+
         foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
         {
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedAt = _dateTime.UtcNow;
-                    entry.Entity.CreatedBy = _currentUser.UserId;
+                    entry.Entity.CreatedAt = now;
+                    entry.Entity.CreatedBy = userId;
+                    entry.Entity.UpdatedAt = now;
+                    entry.Entity.UpdatedBy = userId;
                     break;
                 case EntityState.Modified:
-                    entry.Entity.UpdatedAt = _dateTime.UtcNow;
-                    entry.Entity.UpdatedBy = _currentUser.UserId;
+                    entry.Entity.UpdatedAt = now;
+                    entry.Entity.UpdatedBy = userId;
                     break;
             }
         }

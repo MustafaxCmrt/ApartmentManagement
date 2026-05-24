@@ -41,7 +41,8 @@ public class CreateTenantHandler : IRequestHandler<CreateTenantCommand, Result<T
             ContactEmail = request.ContactEmail.Trim(),
             ContactPhone = request.ContactPhone?.Trim(),
             Address = request.Address?.Trim(),
-            CreatedAt = now
+            CreatedAt = now,
+            UpdatedAt = now
         };
 
         _db.Tenants.Add(tenant);
