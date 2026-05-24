@@ -1,0 +1,77 @@
+TOTAL: 75 | PASSED: 70 | FAILED: 5
+
+[PASS] GET /health/live -> 200 
+[PASS] GET /health/ready -> 200 
+[PASS] POST /auth/login -> 200 
+[PASS] GET /auth/me -> 200 
+[PASS] GET /auth/me -> 200 
+[PASS] GET /auth/me -> 200 
+[PASS] POST /auth/refresh -> 200 
+[PASS] GET /tenants -> 200 
+[PASS] GET /tenants/8227235f-4efb-4c25-bf6b-2ed53ee1188c -> 200 
+[PASS] GET /tenants/8227235f-4efb-4c25-bf6b-2ed53ee1188c/statistics -> 200 
+[PASS] POST /tenants -> 200 
+[PASS] PUT /tenants/58238e85-9daa-4095-8897-ffe55c0f2acb -> 200 
+[PASS] PATCH /tenants/58238e85-9daa-4095-8897-ffe55c0f2acb/active-status -> 200 
+[PASS] GET /buildings -> 200 
+[PASS] POST /buildings -> 200 
+[PASS] GET /buildings/b2d696d6-26ae-4939-a32c-2b4d7fa0e0c3 -> 200 
+[PASS] PUT /buildings/b2d696d6-26ae-4939-a32c-2b4d7fa0e0c3 -> 200 
+[PASS] GET /buildings/b2d696d6-26ae-4939-a32c-2b4d7fa0e0c3/apartments -> 200 
+[PASS] GET /apartments -> 200 
+[PASS] POST /apartments -> 200 
+[PASS] GET /apartments/1368943b-4e67-4849-8750-dd28718934f6 -> 200 
+[PASS] PUT /apartments/1368943b-4e67-4849-8750-dd28718934f6 -> 200 
+[PASS] GET /apartments/1368943b-4e67-4849-8750-dd28718934f6/residents -> 200 
+[PASS] GET /apartments/1368943b-4e67-4849-8750-dd28718934f6/dues -> 200 
+[PASS] POST /apartments/batch -> 200 
+[PASS] GET /residents -> 200 
+[FAIL] POST /residents -> 400 {"code": "Validation", "message": "Telefon numaras\u0131 ge\u00e7ersiz. \u00d6rnek: +905551112233 veya 05551112233."}
+[PASS] GET /dues -> 200 
+[PASS] GET /dues/overdue -> 200 
+[PASS] GET /dues/report?year=2025&month=1 -> 200 
+[PASS] GET /dues/resident/me -> 200 
+[PASS] POST /dues -> 200 
+[PASS] POST /dues/batch -> 200 
+[PASS] GET /dues/8d2ffac9-583a-4937-b658-76c472e34fa0 -> 200 
+[PASS] GET /dues/8d2ffac9-583a-4937-b658-76c472e34fa0 -> 200 
+[PASS] POST /dues/8d2ffac9-583a-4937-b658-76c472e34fa0/payments -> 200 
+[PASS] GET /dues/8d2ffac9-583a-4937-b658-76c472e34fa0/payments -> 200 
+[PASS] DELETE /dues/payments/5b731dec-60f6-4fae-9c72-cde5fceeecbb -> 200 
+[PASS] PUT /dues/8d2ffac9-583a-4937-b658-76c472e34fa0 -> 200 
+[FAIL] POST /decisions -> 500 {"code": "Failure", "message": "An error occurred while saving the entity changes. See the inner exception for details."}
+[PASS] GET /decisions -> 200 
+[PASS] POST /announcements -> 200 
+[PASS] GET /announcements -> 200 
+[PASS] GET /announcements -> 200 
+[PASS] GET /announcements/65c6c901-9e94-43e9-8974-9d4cdbd1891f -> 200 
+[PASS] PUT /announcements/65c6c901-9e94-43e9-8974-9d4cdbd1891f -> 200 
+[PASS] POST /announcements/65c6c901-9e94-43e9-8974-9d4cdbd1891f/read -> 200 
+[PASS] GET /announcements/65c6c901-9e94-43e9-8974-9d4cdbd1891f/read-statistics -> 200 
+[PASS] POST /meetings -> 200 
+[PASS] GET /meetings -> 200 
+[PASS] GET /meetings/1835a0c7-12a3-42a2-83c4-51753923898e -> 200 
+[PASS] GET /meetings/1835a0c7-12a3-42a2-83c4-51753923898e/participants -> 200 
+[PASS] PUT /meetings/1835a0c7-12a3-42a2-83c4-51753923898e/minutes -> 200 
+[PASS] PUT /meetings/1835a0c7-12a3-42a2-83c4-51753923898e -> 200 
+[PASS] POST /maintenance-tickets -> 200 
+[PASS] GET /maintenance-tickets -> 200 
+[PASS] GET /maintenance-tickets -> 200 
+[PASS] GET /maintenance-tickets/f01857e1-5c33-462f-8e85-9235f892a97f -> 200 
+[PASS] PUT /maintenance-tickets/f01857e1-5c33-462f-8e85-9235f892a97f -> 200 
+[PASS] PATCH /maintenance-tickets/f01857e1-5c33-462f-8e85-9235f892a97f/status -> 200 
+[PASS] PATCH /maintenance-tickets/f01857e1-5c33-462f-8e85-9235f892a97f/priority -> 200 
+[PASS] POST /maintenance-tickets/f01857e1-5c33-462f-8e85-9235f892a97f/comment -> 200 
+[PASS] GET /maintenance-tickets/f01857e1-5c33-462f-8e85-9235f892a97f/comments -> 200 
+[PASS] GET /dashboard/summary -> 200 
+[PASS] GET /dashboard/membership-fee-trend?months=6 -> 200 
+[PASS] GET /dashboard/recent-activities?limit=10 -> 200 
+[PASS] DELETE /maintenance-tickets/f01857e1-5c33-462f-8e85-9235f892a97f -> 200 
+[PASS] DELETE /meetings/1835a0c7-12a3-42a2-83c4-51753923898e -> 200 
+[PASS] DELETE /announcements/65c6c901-9e94-43e9-8974-9d4cdbd1891f -> 200 
+[PASS] DELETE /dues/8d2ffac9-583a-4937-b658-76c472e34fa0 -> 200 
+[FAIL] DELETE /apartments/3bba2c35-2f8b-4e5c-81f6-5888fdaa8688 -> 409 {"code": "Conflict", "message": "This apartment has linked due records."}
+[FAIL] DELETE /apartments/1368943b-4e67-4849-8750-dd28718934f6 -> 409 {"code": "Conflict", "message": "This apartment has linked due records."}
+[FAIL] DELETE /buildings/b2d696d6-26ae-4939-a32c-2b4d7fa0e0c3 -> 409 {"code": "Conflict", "message": "This building has linked apartments. Delete the apartments first."}
+[PASS] DELETE /tenants/58238e85-9daa-4095-8897-ffe55c0f2acb -> 200 
+[PASS] POST /auth/logout -> 200 

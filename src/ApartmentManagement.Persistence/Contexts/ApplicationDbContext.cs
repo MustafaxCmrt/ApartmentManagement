@@ -93,7 +93,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         where TEntity : class, ITenantEntity, ISoftDeletable
     {
         modelBuilder.Entity<TEntity>().HasQueryFilter(e =>
-            (_currentTenant.IsSuperAdmin || e.TenantId == _currentTenant.TenantId!.Value)
+            (_currentTenant.IsSuperAdmin || e.TenantId == (_currentTenant.TenantId ?? Guid.Empty))
             && !e.IsDeleted);
     }
 
@@ -101,7 +101,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         where TEntity : class, ITenantEntity
     {
         modelBuilder.Entity<TEntity>().HasQueryFilter(e =>
-            _currentTenant.IsSuperAdmin || e.TenantId == _currentTenant.TenantId!.Value);
+            _currentTenant.IsSuperAdmin || e.TenantId == (_currentTenant.TenantId ?? Guid.Empty));
     }
 
     private void SetSoftDeleteOnlyFilter<TEntity>(ModelBuilder modelBuilder)

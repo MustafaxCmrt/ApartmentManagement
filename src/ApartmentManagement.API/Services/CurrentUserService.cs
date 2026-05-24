@@ -23,7 +23,8 @@ public class CurrentUserService : ICurrentUserService
     public string? Email => _http.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Email)?.Value
                          ?? _http.HttpContext?.User.FindFirst(ClaimTypes.Email)?.Value;
 
-    public string? Role => _http.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value;
+    public string? Role => _http.HttpContext?.User.FindFirst(ClaimTypes.Role)?.Value
+                      ?? _http.HttpContext?.User.FindFirst("role")?.Value;
 
     public bool IsAuthenticated => _http.HttpContext?.User.Identity?.IsAuthenticated == true;
 

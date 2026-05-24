@@ -1,0 +1,436 @@
+version: "2"
+type: backend
+tech_stack:
+  - C#
+  - ASP.NET Core 8
+  - Entity Framework Core
+  - MySQL
+  - JWT Bearer Authentication
+  - MediatR (CQRS)
+  - Swagger
+features:
+  - name: Authentication API
+    description: User authentication, registration, token management
+    files:
+      - src/ApartmentManagement.API/Controllers/AuthController.cs
+    endpoints:
+      - method: POST
+        path: /api/v1.0/auth/login
+        description: Login with phone and password
+        auth_required: false
+        request_schema:
+          body:
+            telefon: string
+            sifre: string
+        response_schema:
+          "200": AuthResponseDto
+      - method: POST
+        path: /api/v1.0/auth/refresh
+        description: Refresh access token
+        auth_required: false
+      - method: POST
+        path: /api/v1.0/auth/logout
+        description: Logout and invalidate refresh token
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/auth/change-password
+        description: Change user password
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/auth/me
+        description: Get current user profile
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/auth/register-yonetici
+        description: Register tenant admin
+        auth_required: false
+      - method: POST
+        path: /api/v1.0/auth/davet-kabul
+        description: Accept user invite
+        auth_required: false
+    depends_on: []
+
+  - name: Tenants API
+    description: SuperAdmin tenant management
+    files:
+      - src/ApartmentManagement.API/Controllers/TenantsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/tenants
+        description: List all tenants
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/tenants/{id}
+        description: Get tenant by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/tenants
+        description: Create tenant
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/tenants/{id}
+        description: Update tenant
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/tenants/{id}
+        description: Delete tenant
+        auth_required: true
+      - method: PATCH
+        path: /api/v1.0/tenants/{id}/active-status
+        description: Toggle tenant active status
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/tenants/{id}/statistics
+        description: Get tenant statistics
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Buildings API
+    description: Building CRUD for tenant admins
+    files:
+      - src/ApartmentManagement.API/Controllers/BuildingsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/buildings
+        description: List buildings
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/buildings/{id}
+        description: Get building by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/buildings
+        description: Create building
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/buildings/{id}
+        description: Update building
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/buildings/{id}
+        description: Delete building
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/buildings/{id}/apartments
+        description: Get building apartments
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Apartments API
+    description: Apartment CRUD and related queries
+    files:
+      - src/ApartmentManagement.API/Controllers/ApartmentsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/apartments
+        description: List apartments
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/apartments/{id}
+        description: Get apartment by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/apartments
+        description: Create apartment
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/apartments/batch
+        description: Batch create apartments
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/apartments/{id}
+        description: Update apartment
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/apartments/{id}
+        description: Delete apartment
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/apartments/{id}/residents
+        description: Get apartment residents
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/apartments/{id}/dues
+        description: Get apartment dues
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Residents API
+    description: Resident management for tenant admins
+    files:
+      - src/ApartmentManagement.API/Controllers/ResidentsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/residents
+        description: List residents
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/residents/{id}
+        description: Get resident by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/residents
+        description: Create resident
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/residents/{id}
+        description: Update resident
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/residents/{id}
+        description: Delete resident
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/residents/{id}/user-invite
+        description: Create user invite for resident
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Dues API
+    description: Membership fee management and payments
+    files:
+      - src/ApartmentManagement.API/Controllers/DuesController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/dues
+        description: List all dues
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/dues/{id}
+        description: Get due by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/dues
+        description: Create due
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/dues/batch
+        description: Batch create dues
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/dues/{id}
+        description: Update due
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/dues/{id}
+        description: Delete due
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/dues/{id}/payments
+        description: Mark payment for due
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/dues/{id}/payments
+        description: Get due payments
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/dues/payments/{paymentId}
+        description: Reverse payment
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/dues/overdue
+        description: Get overdue dues
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/dues/report
+        description: Monthly due report
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/dues/resident/me
+        description: Get current resident dues
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Decisions API
+    description: Board decision management
+    files:
+      - src/ApartmentManagement.API/Controllers/DecisionsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/decisions
+        description: List decisions
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/decisions/{id}
+        description: Get decision by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/decisions
+        description: Create decision
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/decisions/{id}
+        description: Update decision
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/decisions/{id}
+        description: Delete decision
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/decisions/decision-number/{decisionNumber}
+        description: Get decision by number
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Announcements API
+    description: Announcement management and read tracking
+    files:
+      - src/ApartmentManagement.API/Controllers/AnnouncementsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/announcements
+        description: List announcements
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/announcements/{id}
+        description: Get announcement by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/announcements
+        description: Create announcement
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/announcements/{id}
+        description: Update announcement
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/announcements/{id}
+        description: Delete announcement
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/announcements/{id}/read
+        description: Mark announcement as read
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/announcements/{id}/read-statistics
+        description: Get read statistics
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Meetings API
+    description: Meeting management with participants and minutes
+    files:
+      - src/ApartmentManagement.API/Controllers/MeetingsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/meetings
+        description: List meetings
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/meetings/{id}
+        description: Get meeting by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/meetings
+        description: Create meeting
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/meetings/{id}
+        description: Update meeting
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/meetings/{id}
+        description: Delete meeting
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/meetings/{id}/participants
+        description: Get meeting participants
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/meetings/{id}/participants/{participantId}
+        description: Update participant attendance
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/meetings/{id}/minutes
+        description: Save meeting minutes
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Maintenance Tickets API
+    description: Maintenance ticket tracking and comments
+    files:
+      - src/ApartmentManagement.API/Controllers/MaintenanceTicketsController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/maintenance-tickets
+        description: List maintenance tickets
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/maintenance-tickets/{id}
+        description: Get ticket by ID
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/maintenance-tickets
+        description: Create maintenance ticket
+        auth_required: true
+      - method: PUT
+        path: /api/v1.0/maintenance-tickets/{id}
+        description: Update maintenance ticket
+        auth_required: true
+      - method: DELETE
+        path: /api/v1.0/maintenance-tickets/{id}
+        description: Delete maintenance ticket
+        auth_required: true
+      - method: PATCH
+        path: /api/v1.0/maintenance-tickets/{id}/status
+        description: Update ticket status
+        auth_required: true
+      - method: PATCH
+        path: /api/v1.0/maintenance-tickets/{id}/priority
+        description: Update ticket priority
+        auth_required: true
+      - method: POST
+        path: /api/v1.0/maintenance-tickets/{id}/comment
+        description: Add comment to ticket
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/maintenance-tickets/{id}/comments
+        description: Get ticket comments
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Dashboard API
+    description: Dashboard summary and analytics for tenant admins
+    files:
+      - src/ApartmentManagement.API/Controllers/DashboardController.cs
+    endpoints:
+      - method: GET
+        path: /api/v1.0/dashboard/summary
+        description: Dashboard summary
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/dashboard/membership-fee-trend
+        description: Dues trend chart data
+        auth_required: true
+      - method: GET
+        path: /api/v1.0/dashboard/recent-activities
+        description: Recent activities feed
+        auth_required: true
+    depends_on:
+      - Authentication API
+
+  - name: Health Checks
+    description: Liveness and readiness probes
+    files:
+      - src/ApartmentManagement.API/Program.cs
+    endpoints:
+      - method: GET
+        path: /health/live
+        description: Liveness probe
+        auth_required: false
+      - method: GET
+        path: /health/ready
+        description: Readiness probe
+        auth_required: false
+    depends_on: []
+
+known_limitations: []

@@ -114,3 +114,5 @@ vite.config.js.timestamp-*
 
 # Local context / planning notes (not for repo)
 context/
+
+testsprite_tests/tmp/config.json

@@ -30,24 +30,37 @@ public class GetOverdueDuesHandler : IRequestHandler<GetOverdueDuesQuery, Result
 
         var total = await baseQuery.CountAsync(ct);
 
-        var items = await baseQuery
+        var rows = await baseQuery
             .OrderBy(a => a.DueDate)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Select(a => new OverdueDueDto
+            .Select(a => new
+            {
+                a.Id,
+                a.ApartmentId,
+                ApartmentNumber = a.Apartment != null ? a.Apartment.ApartmentNumber : string.Empty,
+                BuildingName = a.Apartment != null && a.Apartment.Building != null ? a.Apartment.Building.Name : null,
+                a.Period,
+                a.Amount,
+                TotalPaid = a.Payments.Sum(o => (decimal?)o.PaidAmount) ?? 0m,
+                a.DueDate
+            })
+            .ToListAsync(ct);
+
+        var items = rows.Select(a => new OverdueDueDto
             {
                 Id = a.Id,
                 ApartmentId = a.ApartmentId,
-                ApartmentNumber = a.Apartment != null ? a.Apartment.ApartmentNumber : string.Empty,
-                BuildingName = a.Apartment != null && a.Apartment.Building != null ? a.Apartment.Building.Name : null,
+                ApartmentNumber = a.ApartmentNumber,
+                BuildingName = a.BuildingName,
                 Period = a.Period,
                 Amount = a.Amount,
-                TotalPaid = a.Payments.Sum(o => (decimal?)o.PaidAmount) ?? 0m,
-                RemainingAmount = a.Amount - (a.Payments.Sum(o => (decimal?)o.PaidAmount) ?? 0m),
+                TotalPaid = a.TotalPaid,
+                RemainingAmount = a.Amount - a.TotalPaid,
                 DueDate = a.DueDate,
-                OverdueDays = (int)(today - a.DueDate).TotalDays
+                OverdueDays = (today - a.DueDate.Date).Days
             })
-            .ToListAsync(ct);
+            .ToList();
 
         return Result<PagedResult<OverdueDueDto>>.Success(new PagedResult<OverdueDueDto>
         {

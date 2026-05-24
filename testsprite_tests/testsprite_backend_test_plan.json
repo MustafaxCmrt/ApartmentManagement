@@ -1,0 +1,7 @@
+[
+  {
+    "id": "TC001",
+    "title": "post apiv10authlogin with valid credentials",
+    "description": "Verify that POST /api/v1.0/auth/login with valid telefon and sifre returns 200 with accessToken, refreshToken, and user profile."
+  }
+]

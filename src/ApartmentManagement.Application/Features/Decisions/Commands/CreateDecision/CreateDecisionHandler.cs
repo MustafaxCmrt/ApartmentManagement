@@ -30,7 +30,10 @@ public class CreateDecisionHandler : IRequestHandler<CreateDecisionCommand, Resu
                 return Result<DecisionDto>.Failure(Error.NotFound("Meeting"));
         }
 
-        var nextNo = (await _db.Decisions.MaxAsync(k => (int?)k.DecisionNumber, ct) ?? 0) + 1;
+        var nextNo = (await _db.Decisions
+            .IgnoreQueryFilters()
+            .Where(d => d.TenantId == tenantId)
+            .MaxAsync(k => (int?)k.DecisionNumber, ct) ?? 0) + 1;
 
         var decision = new Decision
         {

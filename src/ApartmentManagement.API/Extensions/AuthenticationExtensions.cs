@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -28,6 +30,7 @@ public static class AuthenticationExtensions
             {
                 options.RequireHttpsMetadata = !env.IsDevelopment();
                 options.SaveToken = true;
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -38,6 +41,25 @@ public static class AuthenticationExtensions
                     ValidAudience = audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
                     ClockSkew = TimeSpan.Zero
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        if (context.SecurityToken is not JwtSecurityToken jwt
+                            || context.Principal?.Identity is not ClaimsIdentity identity)
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        foreach (var claim in jwt.Claims.Where(c => c.Type is "tid" or "superadmin"))
+                        {
+                            if (identity.FindFirst(claim.Type) is null)
+                                identity.AddClaim(new Claim(claim.Type, claim.Value));
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 };
             });
 
