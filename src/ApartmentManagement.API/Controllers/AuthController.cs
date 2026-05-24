@@ -19,13 +19,13 @@ namespace ApartmentManagement.API.Controllers;
 [Route("api/v{version:apiVersion}/auth")]
 public class AuthController : BaseController
 {
-    [HttpPost("register-yonetici")]
+    [HttpPost("register-manager")]
     [AllowAnonymous]
     [EnableRateLimiting("auth-strict")]
     public async Task<IActionResult> RegisterAdmin([FromBody] RegisterAdminCommand cmd, CancellationToken ct)
         => (await Sender.Send(cmd, ct)).ToActionResult();
 
-    [HttpPost("davet-kabul")]
+    [HttpPost("accept-invite")]
     [AllowAnonymous]
     [EnableRateLimiting("auth-strict")]
     public async Task<IActionResult> AcceptInvite([FromBody] AcceptInviteCommand cmd, CancellationToken ct)
