@@ -19,6 +19,7 @@ public static class DatabaseSeeder
 
         // ---------- SuperAdmin ----------
         var superAdminEmail = "admin@admin.com";
+        var superAdminPhone = "+90 555 000 0001";
         var superAdmin = await context.Users
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.Email == superAdminEmail && u.TenantId == null);
@@ -32,13 +33,19 @@ public static class DatabaseSeeder
                 Email = superAdminEmail,
                 PasswordHash = passwordHasher.Hash("Admin44."),
                 FullName = "System Administrator",
-                Phone = null,
+                Phone = superAdminPhone,
                 Role = UserRole.SuperAdmin,
                 IsActive = true,
                 IsEmailVerified = true,
                 CreatedAt = now
             };
             context.Users.Add(superAdmin);
+            await context.SaveChangesAsync(CancellationToken.None);
+        }
+        else if (string.IsNullOrWhiteSpace(superAdmin.Phone))
+        {
+            superAdmin.Phone = superAdminPhone;
+            superAdmin.UpdatedAt = now;
             await context.SaveChangesAsync(CancellationToken.None);
         }
 
@@ -197,7 +204,7 @@ public static class DatabaseSeeder
                     ApartmentId = firstApartment.Id,
                     UserId = resident.Id,
                     FullName = resident.FullName,
-                    Phone = resident.Phone ?? "+90 555 444 5566",
+                    Phone = resident.Phone,
                     Email = resident.Email,
                     ResidentType = ResidentType.Owner,
                     MoveInDate = now,

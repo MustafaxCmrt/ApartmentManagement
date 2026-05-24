@@ -48,13 +48,34 @@ public class AcceptInviteHandler : IRequestHandler<AcceptInviteCommand, Result<A
         if (invite.ExpiresAt < now)
             return Result<AuthResponseDto>.Failure(Error.Conflict("Davetin süresi dolmuş."));
 
-        // Email zaten kayıtlı mı kontrolü
-        var existingUser = await _db.Users
-            .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(u => !u.IsDeleted && u.Email == invite.Email, ct);
+        if (invite.ResidentId is null)
+            return Result<AuthResponseDto>.Failure(Error.Validation("Davet sakin kaydı ile ilişkili değil."));
 
-        if (existingUser != null)
+        var sakin = await _db.Residents
+            .IgnoreQueryFilters()
+            .FirstOrDefaultAsync(s => s.Id == invite.ResidentId.Value, ct);
+
+        if (sakin is null)
+            return Result<AuthResponseDto>.Failure(Error.NotFound("Resident"));
+
+        if (string.IsNullOrWhiteSpace(sakin.Phone))
+            return Result<AuthResponseDto>.Failure(Error.Validation("Sakin telefon numarası boş olamaz."));
+
+        var phone = sakin.Phone.Trim();
+
+        var emailExists = await _db.Users
+            .IgnoreQueryFilters()
+            .AnyAsync(u => !u.IsDeleted && u.Email == invite.Email, ct);
+
+        if (emailExists)
             return Result<AuthResponseDto>.Failure(Error.Conflict("Bu email zaten kayıtlı."));
+
+        var phoneExists = await _db.Users
+            .IgnoreQueryFilters()
+            .AnyAsync(u => !u.IsDeleted && u.Phone == phone, ct);
+
+        if (phoneExists)
+            return Result<AuthResponseDto>.Failure(Error.Conflict("Bu telefon numarası zaten kayıtlı."));
 
         var user = new User
         {
@@ -62,7 +83,8 @@ public class AcceptInviteHandler : IRequestHandler<AcceptInviteCommand, Result<A
             TenantId = invite.TenantId,
             Email = invite.Email,
             PasswordHash = _hasher.Hash(request.Sifre),
-            FullName = invite.Email, // ad soyad sonradan profilden güncellenir
+            FullName = !string.IsNullOrWhiteSpace(sakin.FullName) ? sakin.FullName : invite.Email,
+            Phone = phone,
             Role = invite.Role,
             IsActive = true,
             IsEmailVerified = true,
@@ -71,22 +93,8 @@ public class AcceptInviteHandler : IRequestHandler<AcceptInviteCommand, Result<A
 
         _db.Users.Add(user);
 
-        // Resident var ise UserId'yi set'le
-        if (invite.ResidentId != null)
-        {
-            var sakin = await _db.Residents
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(s => s.Id == invite.ResidentId.Value, ct);
-
-            if (sakin != null)
-            {
-                sakin.UserId = user.Id;
-                sakin.UpdatedAt = now;
-                // Eğer sakin'in AdSoyadı varsa user'a kopyala
-                if (!string.IsNullOrWhiteSpace(sakin.FullName))
-                    user.FullName = sakin.FullName;
-            }
-        }
+        sakin.UserId = user.Id;
+        sakin.UpdatedAt = now;
 
         invite.UsedAt = now;
 

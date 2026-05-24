@@ -11,7 +11,7 @@ public record RegisterAdminCommand(
     string? ContactPhone,
     string AdminAdSoyad,
     string AdminEmail,
-    string? AdminTelefon,
+    string AdminTelefon,
     string Sifre,
     string SifreTekrar
 ) : IRequest<Result<AuthResponseDto>>;

@@ -33,6 +33,8 @@ public class RegisterAdminHandler : IRequestHandler<RegisterAdminCommand, Result
     public async Task<Result<AuthResponseDto>> Handle(RegisterAdminCommand request, CancellationToken ct)
     {
         var kisaAd = request.ApartmanKisaAd.Trim().ToLowerInvariant();
+        var adminEmail = request.AdminEmail.Trim();
+        var adminTelefon = request.AdminTelefon.Trim();
 
         var kisaAdExists = await _db.Tenants
             .AnyAsync(t => t.ShortName == kisaAd, ct);
@@ -42,10 +44,17 @@ public class RegisterAdminHandler : IRequestHandler<RegisterAdminCommand, Result
 
         var emailExists = await _db.Users
             .IgnoreQueryFilters()
-            .AnyAsync(u => !u.IsDeleted && u.Email == request.AdminEmail, ct);
+            .AnyAsync(u => !u.IsDeleted && u.Email == adminEmail, ct);
 
         if (emailExists)
             return Result<AuthResponseDto>.Failure(Error.Conflict("Bu email zaten kayıtlı."));
+
+        var phoneExists = await _db.Users
+            .IgnoreQueryFilters()
+            .AnyAsync(u => !u.IsDeleted && u.Phone == adminTelefon, ct);
+
+        if (phoneExists)
+            return Result<AuthResponseDto>.Failure(Error.Conflict("Bu telefon numarası zaten kayıtlı."));
 
         var now = _dateTime.UtcNow;
 
@@ -70,10 +79,10 @@ public class RegisterAdminHandler : IRequestHandler<RegisterAdminCommand, Result
         {
             Id = Guid.NewGuid(),
             TenantId = tenant.Id,
-            Email = request.AdminEmail.Trim(),
+            Email = adminEmail,
             PasswordHash = _hasher.Hash(request.Sifre),
             FullName = request.AdminAdSoyad.Trim(),
-            Phone = request.AdminTelefon?.Trim(),
+            Phone = adminTelefon,
             Role = UserRole.TenantAdmin,
             IsActive = true,
             IsEmailVerified = false,

@@ -111,3 +111,6 @@ vite.config.js.timestamp-*
 .sass-cache/
 *.tmp
 *.temp
+
+# Local context / planning notes (not for repo)
+context/

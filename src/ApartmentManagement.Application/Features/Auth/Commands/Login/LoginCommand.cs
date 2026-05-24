@@ -4,4 +4,4 @@ using MediatR;
 
 namespace ApartmentManagement.Application.Features.Auth.Commands.Login;
 
-public record LoginCommand(string Email, string Sifre) : IRequest<Result<AuthResponseDto>>;
+public record LoginCommand(string Telefon, string Sifre) : IRequest<Result<AuthResponseDto>>;

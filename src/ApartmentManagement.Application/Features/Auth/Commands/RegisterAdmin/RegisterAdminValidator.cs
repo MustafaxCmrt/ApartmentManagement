@@ -13,7 +13,7 @@ public class RegisterAdminValidator : AbstractValidator<RegisterAdminCommand>
         RuleFor(x => x.ContactPhone).MaximumLength(30);
         RuleFor(x => x.AdminAdSoyad).NotEmpty().MaximumLength(200);
         RuleFor(x => x.AdminEmail).NotEmpty().EmailAddress().MaximumLength(200);
-        RuleFor(x => x.AdminTelefon).MaximumLength(30);
+        RuleFor(x => x.AdminTelefon).NotEmpty().MaximumLength(30);
         RuleFor(x => x.Sifre).NotEmpty().MinimumLength(6).MaximumLength(100);
         RuleFor(x => x.SifreTekrar).NotEmpty().Equal(x => x.Sifre).WithMessage("Şifreler eşleşmiyor.");
     }

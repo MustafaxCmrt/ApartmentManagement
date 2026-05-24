@@ -31,14 +31,16 @@ public class LoginHandler : IRequestHandler<LoginCommand, Result<AuthResponseDto
 
     public async Task<Result<AuthResponseDto>> Handle(LoginCommand request, CancellationToken ct)
     {
+        var telefon = request.Telefon.Trim();
+
         var user = await _db.Users
             .IgnoreQueryFilters()
-            .Where(u => !u.IsDeleted && u.Email == request.Email)
+            .Where(u => !u.IsDeleted && u.Phone == telefon)
             .OrderBy(u => u.CreatedAt)
             .FirstOrDefaultAsync(ct);
 
         if (user is null || !_hasher.Verify(request.Sifre, user.PasswordHash))
-            return Result<AuthResponseDto>.Failure(Error.Unauthorized("Email veya şifre hatalı."));
+            return Result<AuthResponseDto>.Failure(Error.Unauthorized("Telefon numarası veya şifre hatalı."));
 
         if (!user.IsActive)
             return Result<AuthResponseDto>.Failure(Error.Unauthorized("Hesap pasif."));

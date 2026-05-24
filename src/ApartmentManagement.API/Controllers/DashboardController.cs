@@ -16,15 +16,15 @@ namespace ApartmentManagement.API.Controllers;
 [Authorize(Roles = "TenantAdmin")]
 public class DashboardController : BaseController
 {
-    [HttpGet("ozet")]
+    [HttpGet("summary")]
     public async Task<IActionResult> Summary(CancellationToken ct)
         => (await Sender.Send(new GetSummaryQuery(), ct)).ToActionResult();
 
-    [HttpGet("aidat-trend")]
+    [HttpGet("membership-fee-trend")]
     public async Task<IActionResult> DueTrend([FromQuery] GetDuesTrendQuery query, CancellationToken ct)
         => (await Sender.Send(query, ct)).ToActionResult();
 
-    [HttpGet("son-aktiviteler")]
+    [HttpGet("recent-activities")]
     public async Task<IActionResult> RecentActivities([FromQuery] GetRecentActivitiesQuery query, CancellationToken ct)
         => (await Sender.Send(query, ct)).ToActionResult();
 }

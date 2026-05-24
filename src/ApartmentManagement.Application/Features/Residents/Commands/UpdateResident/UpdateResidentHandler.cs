@@ -29,8 +29,25 @@ public class UpdateResidentHandler : IRequestHandler<UpdateResidentCommand, Resu
             foreach (var o in others) o.IsPrimaryContact = false;
         }
 
+        var phone = request.Phone.Trim();
+
+        if (resident.UserId is not null)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == resident.UserId.Value, ct);
+            if (user is not null && user.Phone != phone)
+            {
+                var phoneExists = await _db.Users
+                    .AnyAsync(u => !u.IsDeleted && u.Id != user.Id && u.Phone == phone, ct);
+
+                if (phoneExists)
+                    return Result.Failure(Error.Conflict("Bu telefon numarası zaten kayıtlı."));
+
+                user.Phone = phone;
+            }
+        }
+
         resident.FullName = request.FullName.Trim();
-        resident.Phone = request.Phone.Trim();
+        resident.Phone = phone;
         resident.Email = request.Email?.Trim();
         resident.ResidentType = residentType;
         resident.MoveInDate = request.MoveInDate;

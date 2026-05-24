@@ -15,12 +15,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         b.Property(x => x.Email).IsRequired().HasMaxLength(200);
         b.Property(x => x.PasswordHash).IsRequired().HasMaxLength(200);
         b.Property(x => x.FullName).IsRequired().HasMaxLength(200);
-        b.Property(x => x.Phone).HasMaxLength(30);
+        b.Property(x => x.Phone).IsRequired().HasMaxLength(30);
         b.Property(x => x.Role).IsRequired();
         b.Property(x => x.IsActive).IsRequired();
         b.Property(x => x.IsEmailVerified).IsRequired();
 
-        b.HasIndex(x => new { x.TenantId, x.Email }).IsUnique();
+        b.HasIndex(x => x.Email).IsUnique();
+        b.HasIndex(x => x.Phone).IsUnique();
         b.HasIndex(x => new { x.TenantId, x.Role });
     }
 }
