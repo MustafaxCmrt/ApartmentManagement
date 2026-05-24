@@ -43,6 +43,10 @@ public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, Resu
         user.UpdatedAt = _dateTime.UtcNow;
         user.UpdatedBy = userId;
 
+        await _db.RefreshTokens
+            .Where(rt => rt.UserId == userId && rt.RevokedAt == null)
+            .ExecuteUpdateAsync(s => s.SetProperty(rt => rt.RevokedAt, _dateTime.UtcNow), ct);
+
         await _db.SaveChangesAsync(ct);
 
         return Result.Success();
