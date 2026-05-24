@@ -25,5 +25,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .WithMany()
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        b.HasQueryFilter(rt => !rt.User!.IsDeleted);
     }
 }
