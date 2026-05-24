@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using ApartmentManagement.Application.Common.DTOs;
 using ApartmentManagement.Domain.Entities;
@@ -33,8 +34,8 @@ public class RegisterAdminHandler : IRequestHandler<RegisterAdminCommand, Result
     public async Task<Result<AuthResponseDto>> Handle(RegisterAdminCommand request, CancellationToken ct)
     {
         var kisaAd = request.ApartmanKisaAd.Trim().ToLowerInvariant();
-        var adminEmail = request.AdminEmail.Trim();
-        var adminTelefon = request.AdminTelefon.Trim();
+        var adminEmail = EmailNormalizer.Normalize(request.AdminEmail);
+        var adminTelefon = PhoneNormalizer.Normalize(request.AdminTelefon);
 
         var kisaAdExists = await _db.Tenants
             .AnyAsync(t => t.ShortName == kisaAd, ct);
@@ -67,8 +68,10 @@ public class RegisterAdminHandler : IRequestHandler<RegisterAdminCommand, Result
             SubscriptionStart = now,
             SubscriptionEnd = null,
             MaxApartmentCount = 50,
-            ContactEmail = request.ContactEmail.Trim(),
-            ContactPhone = request.ContactPhone?.Trim(),
+            ContactEmail = EmailNormalizer.Normalize(request.ContactEmail),
+            ContactPhone = string.IsNullOrWhiteSpace(request.ContactPhone)
+                ? null
+                : PhoneNormalizer.Normalize(request.ContactPhone),
             CreatedAt = now,
             UpdatedAt = now
         };

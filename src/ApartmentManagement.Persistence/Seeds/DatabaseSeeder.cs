@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Domain.Entities;
 using ApartmentManagement.Domain.Enums;
 using ApartmentManagement.Persistence.Contexts;
@@ -19,7 +20,7 @@ public static class DatabaseSeeder
 
         // ---------- SuperAdmin ----------
         var superAdminEmail = "admin@admin.com";
-        var superAdminPhone = "+90 555 000 0001";
+        var superAdminPhone = PhoneNormalizer.Normalize("+90 555 000 0001");
         var superAdmin = await context.Users
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(u => u.Email == superAdminEmail && u.TenantId == null);
@@ -66,7 +67,7 @@ public static class DatabaseSeeder
                 SubscriptionEnd = null,
                 MaxApartmentCount = 50,
                 ContactEmail = "contact@demo.com",
-                ContactPhone = "+90 555 000 0000",
+                ContactPhone = PhoneNormalizer.Normalize("+90 555 000 0000"),
                 Address = "Demo District, Demo Street No:1, Istanbul",
                 CreatedAt = now,
                 UpdatedAt = now
@@ -150,7 +151,7 @@ public static class DatabaseSeeder
                 Email = tenantAdminEmail,
                 PasswordHash = passwordHasher.Hash("Demo44."),
                 FullName = "Demo Admin",
-                Phone = "+90 555 111 2233",
+                Phone = PhoneNormalizer.Normalize("+90 555 111 2233"),
                 Role = UserRole.TenantAdmin,
                 IsActive = true,
                 IsEmailVerified = true,
@@ -175,7 +176,7 @@ public static class DatabaseSeeder
                 Email = residentEmail,
                 PasswordHash = passwordHasher.Hash("Demo44."),
                 FullName = "Demo Resident",
-                Phone = "+90 555 444 5566",
+                Phone = PhoneNormalizer.Normalize("+90 555 444 5566"),
                 Role = UserRole.Resident,
                 IsActive = true,
                 IsEmailVerified = true,

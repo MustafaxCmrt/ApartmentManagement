@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using ApartmentManagement.Domain.Enums;
 using MediatR;
@@ -29,7 +30,8 @@ public class UpdateResidentHandler : IRequestHandler<UpdateResidentCommand, Resu
             foreach (var o in others) o.IsPrimaryContact = false;
         }
 
-        var phone = request.Phone.Trim();
+        var phone = PhoneNormalizer.Normalize(request.Phone);
+        var email = string.IsNullOrWhiteSpace(request.Email) ? null : EmailNormalizer.Normalize(request.Email);
 
         if (resident.UserId is not null)
         {
@@ -48,7 +50,7 @@ public class UpdateResidentHandler : IRequestHandler<UpdateResidentCommand, Resu
 
         resident.FullName = request.FullName.Trim();
         resident.Phone = phone;
-        resident.Email = request.Email?.Trim();
+        resident.Email = email;
         resident.ResidentType = residentType;
         resident.MoveInDate = request.MoveInDate;
         resident.MoveOutDate = request.MoveOutDate;

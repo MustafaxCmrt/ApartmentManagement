@@ -4,7 +4,10 @@ public static class CorsExtensions
 {
     public const string PolicyName = "ApartmanCors";
 
-    public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCorsPolicy(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IWebHostEnvironment env)
     {
         var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
@@ -14,7 +17,14 @@ public static class CorsExtensions
             {
                 if (origins.Length == 0)
                 {
-                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                    if (!env.IsDevelopment())
+                        throw new InvalidOperationException("Cors:AllowedOrigins production'da boş olamaz.");
+
+                    builder
+                        .WithOrigins("http://localhost:5173", "http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 }
                 else
                 {

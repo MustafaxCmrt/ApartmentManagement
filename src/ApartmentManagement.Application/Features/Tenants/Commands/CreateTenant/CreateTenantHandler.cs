@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using ApartmentManagement.Application.Common.DTOs;
 using ApartmentManagement.Domain.Entities;
@@ -38,8 +39,10 @@ public class CreateTenantHandler : IRequestHandler<CreateTenantCommand, Result<T
             SubscriptionEnd = request.SubscriptionEnd,
             MaxApartmentCount = request.MaxApartmentCount,
             LogoUrl = request.LogoUrl,
-            ContactEmail = request.ContactEmail.Trim(),
-            ContactPhone = request.ContactPhone?.Trim(),
+            ContactEmail = EmailNormalizer.Normalize(request.ContactEmail),
+            ContactPhone = string.IsNullOrWhiteSpace(request.ContactPhone)
+                ? null
+                : PhoneNormalizer.Normalize(request.ContactPhone),
             Address = request.Address?.Trim(),
             CreatedAt = now,
             UpdatedAt = now

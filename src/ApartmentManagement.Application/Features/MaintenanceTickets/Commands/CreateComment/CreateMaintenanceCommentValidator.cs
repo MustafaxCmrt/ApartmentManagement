@@ -1,3 +1,4 @@
+using ApartmentManagement.Application.Common.Validation;
 using FluentValidation;
 
 namespace ApartmentManagement.Application.Features.MaintenanceTickets.Commands.CreateComment;
@@ -6,7 +7,7 @@ public class CreateMaintenanceCommentValidator : AbstractValidator<CreateMainten
 {
     public CreateMaintenanceCommentValidator()
     {
-        RuleFor(x => x.MaintenanceTicketId).NotEmpty();
-        RuleFor(x => x.Comment).NotEmpty();
+        RuleFor(x => x.MaintenanceTicketId).RequiredGuid();
+        RuleFor(x => x.Comment).NotEmpty().WithMessage(ValidationMessages.Required);
     }
 }

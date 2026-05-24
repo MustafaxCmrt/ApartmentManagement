@@ -1,3 +1,4 @@
+using ApartmentManagement.Application.Common.Validation;
 using FluentValidation;
 
 namespace ApartmentManagement.Application.Features.Auth.Commands.ChangePassword;
@@ -6,10 +7,11 @@ public class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
 {
     public ChangePasswordValidator()
     {
-        RuleFor(x => x.EskiSifre).NotEmpty();
-        RuleFor(x => x.YeniSifre).NotEmpty().MinimumLength(6).MaximumLength(100)
-            .NotEqual(x => x.EskiSifre).WithMessage("Yeni şifre eski şifre ile aynı olamaz.");
-        RuleFor(x => x.YeniSifreTekrar).NotEmpty().Equal(x => x.YeniSifre)
-            .WithMessage("Yeni şifreler eşleşmiyor.");
+        RuleFor(x => x.EskiSifre).NotEmpty().WithMessage(ValidationMessages.Required);
+        RuleFor(x => x.YeniSifre).StrongPassword()
+            .NotEqual(x => x.EskiSifre).WithMessage(ValidationMessages.NewPasswordSameAsOld);
+        RuleFor(x => x.YeniSifreTekrar)
+            .NotEmpty().WithMessage(ValidationMessages.Required)
+            .Equal(x => x.YeniSifre).WithMessage(ValidationMessages.PasswordsDoNotMatch);
     }
 }

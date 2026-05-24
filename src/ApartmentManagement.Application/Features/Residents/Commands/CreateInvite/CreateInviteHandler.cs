@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using ApartmentManagement.Application.Common.DTOs;
 using ApartmentManagement.Domain.Entities;
@@ -51,13 +52,14 @@ public class CreateInviteHandler : IRequestHandler<CreateInviteCommand, Result<I
         var tokenHash = _jwt.HashRefreshToken(tokenPlain);
         var now = _dateTime.UtcNow;
         var expiresAt = now.AddDays(InviteExpiryDays);
+        var email = EmailNormalizer.Normalize(resident.Email);
 
         var invite = new UserInvite
         {
             Id = Guid.NewGuid(),
             TenantId = tenantId,
             ResidentId = resident.Id,
-            Email = resident.Email,
+            Email = email,
             TokenHash = tokenHash,
             Role = UserRole.Resident,
             CreatedAt = now,

@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -23,8 +24,10 @@ public class UpdateTenantHandler : IRequestHandler<UpdateTenantCommand, Result>
             return Result.Failure(Error.NotFound("Tenant"));
 
         tenant.Name = request.Name.Trim();
-        tenant.ContactEmail = request.ContactEmail.Trim();
-        tenant.ContactPhone = request.ContactPhone?.Trim();
+        tenant.ContactEmail = EmailNormalizer.Normalize(request.ContactEmail);
+        tenant.ContactPhone = string.IsNullOrWhiteSpace(request.ContactPhone)
+            ? null
+            : PhoneNormalizer.Normalize(request.ContactPhone);
         tenant.Address = request.Address?.Trim();
         tenant.MaxApartmentCount = request.MaxApartmentCount;
         tenant.SubscriptionEnd = request.SubscriptionEnd;

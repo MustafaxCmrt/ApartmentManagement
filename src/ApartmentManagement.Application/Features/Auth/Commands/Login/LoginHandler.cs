@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using ApartmentManagement.Application.Common.DTOs;
 using ApartmentManagement.Domain.Entities;
@@ -31,7 +32,10 @@ public class LoginHandler : IRequestHandler<LoginCommand, Result<AuthResponseDto
 
     public async Task<Result<AuthResponseDto>> Handle(LoginCommand request, CancellationToken ct)
     {
-        var telefon = request.Telefon.Trim();
+        const string invalidLoginMessage = "Telefon numarası veya şifre hatalı.";
+
+        if (!PhoneNormalizer.TryNormalize(request.Telefon, out var telefon))
+            return Result<AuthResponseDto>.Failure(Error.Unauthorized(invalidLoginMessage));
 
         var user = await _db.Users
             .IgnoreQueryFilters()
@@ -39,8 +43,11 @@ public class LoginHandler : IRequestHandler<LoginCommand, Result<AuthResponseDto
             .OrderBy(u => u.CreatedAt)
             .FirstOrDefaultAsync(ct);
 
-        if (user is null || !_hasher.Verify(request.Sifre, user.PasswordHash))
-            return Result<AuthResponseDto>.Failure(Error.Unauthorized("Telefon numarası veya şifre hatalı."));
+        var validHash = user?.PasswordHash ?? _hasher.DummyHash;
+        var passwordOk = _hasher.Verify(request.Sifre, validHash);
+
+        if (user is null || !passwordOk)
+            return Result<AuthResponseDto>.Failure(Error.Unauthorized(invalidLoginMessage));
 
         if (!user.IsActive)
             return Result<AuthResponseDto>.Failure(Error.Unauthorized("Hesap pasif."));

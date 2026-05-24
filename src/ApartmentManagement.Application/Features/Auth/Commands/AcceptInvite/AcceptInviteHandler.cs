@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using ApartmentManagement.Application.Common.DTOs;
 using ApartmentManagement.Domain.Entities;
@@ -61,11 +62,14 @@ public class AcceptInviteHandler : IRequestHandler<AcceptInviteCommand, Result<A
         if (string.IsNullOrWhiteSpace(sakin.Phone))
             return Result<AuthResponseDto>.Failure(Error.Validation("Sakin telefon numarası boş olamaz."));
 
-        var phone = sakin.Phone.Trim();
+        var email = EmailNormalizer.Normalize(invite.Email);
+
+        if (!PhoneNormalizer.TryNormalize(sakin.Phone, out var phone))
+            return Result<AuthResponseDto>.Failure(Error.Validation("Sakin telefon numarası geçersiz."));
 
         var emailExists = await _db.Users
             .IgnoreQueryFilters()
-            .AnyAsync(u => !u.IsDeleted && u.Email == invite.Email, ct);
+            .AnyAsync(u => !u.IsDeleted && u.Email == email, ct);
 
         if (emailExists)
             return Result<AuthResponseDto>.Failure(Error.Conflict("Bu email zaten kayıtlı."));
@@ -81,9 +85,9 @@ public class AcceptInviteHandler : IRequestHandler<AcceptInviteCommand, Result<A
         {
             Id = Guid.NewGuid(),
             TenantId = invite.TenantId,
-            Email = invite.Email,
+            Email = email,
             PasswordHash = _hasher.Hash(request.Sifre),
-            FullName = !string.IsNullOrWhiteSpace(sakin.FullName) ? sakin.FullName : invite.Email,
+            FullName = !string.IsNullOrWhiteSpace(sakin.FullName) ? sakin.FullName : email,
             Phone = phone,
             Role = invite.Role,
             IsActive = true,

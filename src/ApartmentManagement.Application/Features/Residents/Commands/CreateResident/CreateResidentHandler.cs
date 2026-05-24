@@ -1,4 +1,5 @@
 using ApartmentManagement.Application.Common.Interfaces;
+using ApartmentManagement.Application.Common.Utilities;
 using ApartmentManagement.Application.Common.Models;
 using ApartmentManagement.Application.Common.DTOs;
 using ApartmentManagement.Domain.Entities;
@@ -31,6 +32,9 @@ public class CreateResidentHandler : IRequestHandler<CreateResidentCommand, Resu
         if (!Enum.TryParse<ResidentType>(request.ResidentType, true, out var residentType))
             return Result<ResidentDto>.Failure(Error.Validation("Invalid resident type."));
 
+        var phone = PhoneNormalizer.Normalize(request.Phone);
+        var email = string.IsNullOrWhiteSpace(request.Email) ? null : EmailNormalizer.Normalize(request.Email);
+
         // If marked as primary contact, unset other primary contacts for the same apartment
         if (request.IsPrimaryContact)
         {
@@ -47,8 +51,8 @@ public class CreateResidentHandler : IRequestHandler<CreateResidentCommand, Resu
             TenantId = tenantId,
             ApartmentId = request.ApartmentId,
             FullName = request.FullName.Trim(),
-            Phone = request.Phone.Trim(),
-            Email = request.Email?.Trim(),
+            Phone = phone,
+            Email = email,
             ResidentType = residentType,
             MoveInDate = request.MoveInDate,
             IsPrimaryContact = request.IsPrimaryContact
