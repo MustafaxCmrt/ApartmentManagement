@@ -1,12 +1,17 @@
+using Asp.Versioning;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ApartmentManagement.API.Controllers.Common;
 
-public class BaseController : Controller
+[ApiController]
+[ApiVersion("1.0")]
+[Authorize]
+[EnableRateLimiting("api-general")]
+public abstract class BaseController : ControllerBase
 {
-    // GET
-    public IActionResult Index()
-    {
-        return View();
-    }
+    private ISender? _sender;
+    protected ISender Sender => _sender ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 }
