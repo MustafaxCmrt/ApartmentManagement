@@ -7,6 +7,7 @@ using ApartmentManagement.Application.Features.Auth.Commands.Logout;
 using ApartmentManagement.Application.Features.Auth.Commands.RefreshToken;
 using ApartmentManagement.Application.Features.Auth.Commands.RegisterAdmin;
 using ApartmentManagement.Application.Features.Auth.Commands.ResetPassword;
+using ApartmentManagement.Application.Features.Auth.Commands.UpdateProfile;
 using ApartmentManagement.Application.Features.Auth.Queries.Me;
 using Asp.Versioning;
 using MediatR;
@@ -68,4 +69,8 @@ public class AuthController : BaseController
     [HttpGet("me")]
     public async Task<IActionResult> Me(CancellationToken ct)
         => (await Sender.Send(new MeQuery(), ct)).ToActionResult();
+
+    [HttpPut("me")]
+    public async Task<IActionResult> UpdateMe([FromBody] UpdateProfileCommand cmd, CancellationToken ct)
+        => (await Sender.Send(cmd, ct)).ToActionResult();
 }
