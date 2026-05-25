@@ -7,6 +7,7 @@ public class RemoveParticipantValidator : AbstractValidator<RemoveParticipantCom
 {
     public RemoveParticipantValidator()
     {
+        RuleFor(x => x.MeetingId).RequiredGuid();
         RuleFor(x => x.ParticipantId).RequiredGuid();
     }
 }

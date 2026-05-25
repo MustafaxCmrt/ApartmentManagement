@@ -27,18 +27,18 @@ public class AddParticipantHandler : IRequestHandler<AddParticipantCommand, Resu
         if (!Enum.TryParse<AttendanceStatus>(request.AttendanceStatus, true, out var status))
             return Result<ParticipantDto>.Failure(Error.Validation("Invalid attendance status."));
 
-        var meetingExists = await _db.Meetings.AnyAsync(t => t.Id == request.MeetingId, ct);
-        if (!meetingExists)
+        var meeting = await _db.Meetings.FirstOrDefaultAsync(t => t.Id == request.MeetingId, ct);
+        if (meeting is null)
             return Result<ParticipantDto>.Failure(Error.NotFound("Meeting"));
 
-        var apartment = await _db.Apartments.FirstOrDefaultAsync(d => d.Id == request.ApartmentId, ct);
+        var apartment = await _db.Apartments.Include(a => a.Building).FirstOrDefaultAsync(d => d.Id == request.ApartmentId, ct);
         if (apartment is null)
-            return Result<ParticipantDto>.Failure(Error.NotFound("Apartments"));
+            return Result<ParticipantDto>.Failure(Error.NotFound("Apartment"));
 
         var dup = await _db.MeetingParticipants
             .AnyAsync(k => k.MeetingId == request.MeetingId && k.ApartmentId == request.ApartmentId, ct);
         if (dup)
-            return Result<ParticipantDto>.Failure(Error.Conflict("This apartment is already added as a participant."));
+            return Result<ParticipantDto>.Failure(Error.Conflict("Bu daire zaten katılımcı listesinde."));
 
         var participant = new MeetingParticipant
         {
@@ -51,7 +51,8 @@ public class AddParticipantHandler : IRequestHandler<AddParticipantCommand, Resu
         };
 
         _db.MeetingParticipants.Add(participant);
-        await _db.SaveChangesAsync(ct);
+        try { await _db.SaveChangesAsync(ct); }
+        catch (DbUpdateException) { return Result<ParticipantDto>.Failure(Error.Conflict("Bu daire zaten katılımcı listesinde.")); }
 
         return Result<ParticipantDto>.Success(new ParticipantDto
         {

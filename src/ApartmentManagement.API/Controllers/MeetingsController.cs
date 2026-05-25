@@ -3,6 +3,9 @@ using ApartmentManagement.Application.Features.Meetings.Commands.CreateMeeting;
 using ApartmentManagement.Application.Features.Meetings.Commands.DeleteMeeting;
 using ApartmentManagement.Application.Features.Meetings.Commands.UpdateMinutes;
 using ApartmentManagement.Application.Features.Meetings.Commands.UpdateMeeting;
+using ApartmentManagement.Application.Features.Meetings.Commands.AddParticipant;
+using ApartmentManagement.Application.Features.Meetings.Commands.AddParticipantsBatch;
+using ApartmentManagement.Application.Features.Meetings.Commands.RemoveParticipant;
 using ApartmentManagement.Application.Features.Meetings.Commands.UpdateAttendanceStatus;
 using ApartmentManagement.Application.Features.Meetings.Queries.GetMeetingById;
 using ApartmentManagement.Application.Features.Meetings.Queries.GetAllMeetings;
@@ -47,6 +50,18 @@ public class MeetingsController : BaseController
     [HttpPut("{id:guid}/participants/{participantId:guid}")]
     public async Task<IActionResult> UpdateParticipant(Guid id, Guid participantId, [FromBody] UpdateAttendanceStatusCommand cmd, CancellationToken ct)
         => (await Sender.Send(cmd with { ParticipantId = participantId }, ct)).ToActionResult();
+
+    [HttpPost("{id:guid}/participants")]
+    public async Task<IActionResult> AddParticipant(Guid id, [FromBody] AddParticipantCommand cmd, CancellationToken ct)
+        => (await Sender.Send(cmd with { MeetingId = id }, ct)).ToActionResult();
+
+    [HttpDelete("{id:guid}/participants/{participantId:guid}")]
+    public async Task<IActionResult> RemoveParticipant(Guid id, Guid participantId, CancellationToken ct)
+        => (await Sender.Send(new RemoveParticipantCommand(id, participantId), ct)).ToActionResult();
+
+    [HttpPost("{id:guid}/participants/batch")]
+    public async Task<IActionResult> AddParticipantsBatch(Guid id, [FromBody] AddParticipantsBatchCommand cmd, CancellationToken ct)
+        => (await Sender.Send(cmd with { MeetingId = id }, ct)).ToActionResult();
 
     [HttpPut("{id:guid}/minutes")]
     public async Task<IActionResult> SaveMinutes(Guid id, [FromBody] UpdateMinutesCommand cmd, CancellationToken ct)

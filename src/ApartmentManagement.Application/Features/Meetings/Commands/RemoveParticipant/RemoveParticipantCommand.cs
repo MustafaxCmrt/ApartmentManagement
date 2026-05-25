@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ApartmentManagement.Application.Features.Meetings.Commands.RemoveParticipant;
 
-public record RemoveParticipantCommand(Guid ParticipantId) : IRequest<Result>;
+public record RemoveParticipantCommand(Guid MeetingId, Guid ParticipantId) : IRequest<Result>;
