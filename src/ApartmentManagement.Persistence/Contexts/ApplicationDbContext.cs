@@ -40,6 +40,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<MeetingParticipant> MeetingParticipants => Set<MeetingParticipant>();
     public DbSet<Decision> Decisions => Set<Decision>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     private static readonly MethodInfo TenantAndSoftDeleteMethod =
         typeof(ApplicationDbContext).GetMethod(

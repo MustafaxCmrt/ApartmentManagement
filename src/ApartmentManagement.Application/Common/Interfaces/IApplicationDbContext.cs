@@ -21,6 +21,8 @@ public interface IApplicationDbContext
     DbSet<MeetingParticipant> MeetingParticipants { get; }
     DbSet<Decision> Decisions { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<PasswordResetToken> PasswordResetTokens { get; }
+    DbSet<Notification> Notifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken ct);
 }
