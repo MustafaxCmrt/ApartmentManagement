@@ -13,7 +13,7 @@ public class RemoveParticipantHandler : IRequestHandler<RemoveParticipantCommand
 
     public async Task<Result> Handle(RemoveParticipantCommand request, CancellationToken ct)
     {
-        var k = await _db.MeetingParticipants.FirstOrDefaultAsync(x => x.Id == request.ParticipantId, ct);
+        var k = await _db.MeetingParticipants.FirstOrDefaultAsync(x => x.Id == request.ParticipantId && x.MeetingId == request.MeetingId, ct);
         if (k is null)
             return Result.Failure(Error.NotFound("Participant"));
 
