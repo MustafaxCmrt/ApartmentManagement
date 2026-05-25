@@ -1,10 +1,12 @@
 using ApartmentManagement.API.Extensions;
 using ApartmentManagement.Application.Features.Auth.Commands.ChangePassword;
 using ApartmentManagement.Application.Features.Auth.Commands.AcceptInvite;
+using ApartmentManagement.Application.Features.Auth.Commands.ForgotPassword;
 using ApartmentManagement.Application.Features.Auth.Commands.Login;
 using ApartmentManagement.Application.Features.Auth.Commands.Logout;
 using ApartmentManagement.Application.Features.Auth.Commands.RefreshToken;
 using ApartmentManagement.Application.Features.Auth.Commands.RegisterAdmin;
+using ApartmentManagement.Application.Features.Auth.Commands.ResetPassword;
 using ApartmentManagement.Application.Features.Auth.Queries.Me;
 using Asp.Versioning;
 using MediatR;
@@ -49,6 +51,18 @@ public class AuthController : BaseController
 
     [HttpPost("change-password")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand cmd, CancellationToken ct)
+        => (await Sender.Send(cmd, ct)).ToActionResult();
+
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    [EnableRateLimiting("auth-strict")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand cmd, CancellationToken ct)
+        => (await Sender.Send(cmd, ct)).ToActionResult();
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    [EnableRateLimiting("auth-strict")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand cmd, CancellationToken ct)
         => (await Sender.Send(cmd, ct)).ToActionResult();
 
     [HttpGet("me")]
