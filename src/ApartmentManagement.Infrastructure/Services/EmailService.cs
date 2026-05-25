@@ -20,4 +20,13 @@ public class EmailService : IEmailService
             inviteUrl);
         return Task.CompletedTask;
     }
+
+    public Task SendPasswordResetEmailAsync(string toEmail, string resetUrl, CancellationToken ct)
+    {
+        _logger.LogInformation(
+            "Password reset for {To}: {Url}",
+            toEmail,
+            resetUrl);
+        return Task.CompletedTask;
+    }
 }
