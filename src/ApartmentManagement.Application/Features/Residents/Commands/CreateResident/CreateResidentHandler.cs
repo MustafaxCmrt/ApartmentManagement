@@ -35,7 +35,6 @@ public class CreateResidentHandler : IRequestHandler<CreateResidentCommand, Resu
         var phone = PhoneNormalizer.Normalize(request.Phone);
         var email = string.IsNullOrWhiteSpace(request.Email) ? null : EmailNormalizer.Normalize(request.Email);
 
-        // If marked as primary contact, unset other primary contacts for the same apartment
         if (request.IsPrimaryContact)
         {
             var others = await _db.Residents
@@ -59,6 +58,20 @@ public class CreateResidentHandler : IRequestHandler<CreateResidentCommand, Resu
         };
 
         _db.Residents.Add(resident);
+
+        var existingActiveTypes = await _db.Residents
+            .Where(s => s.ApartmentId == request.ApartmentId && s.MoveOutDate == null)
+            .Select(s => s.ResidentType)
+            .ToListAsync(ct);
+
+        var allActiveTypes = existingActiveTypes.Concat(new[] { residentType });
+
+        apartment.OccupancyStatus = allActiveTypes.Any(t => t == ResidentType.Owner)
+            ? OccupancyStatus.Occupied
+            : allActiveTypes.Any(t => t == ResidentType.Tenant)
+                ? OccupancyStatus.Rented
+                : OccupancyStatus.Vacant;
+
         await _db.SaveChangesAsync(ct);
 
         return Result<ResidentDto>.Success(new ResidentDto

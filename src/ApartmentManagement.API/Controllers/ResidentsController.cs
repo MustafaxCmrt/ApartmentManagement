@@ -1,6 +1,7 @@
 using ApartmentManagement.API.Extensions;
 using ApartmentManagement.Application.Features.Residents.Commands.CreateResident;
 using ApartmentManagement.Application.Features.Residents.Commands.DeleteResident;
+using ApartmentManagement.Application.Features.Residents.Commands.DeleteResidentsBatch;
 using ApartmentManagement.Application.Features.Residents.Commands.CreateInvite;
 using ApartmentManagement.Application.Features.Residents.Commands.UpdateResident;
 using ApartmentManagement.Application.Features.Residents.Queries.GetResidentById;
@@ -38,6 +39,10 @@ public class ResidentsController : BaseController
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         => (await Sender.Send(new DeleteResidentCommand(id), ct)).ToActionResult();
+
+    [HttpDelete("batch")]
+    public async Task<IActionResult> DeleteBatch([FromBody] DeleteResidentsBatchCommand cmd, CancellationToken ct)
+        => (await Sender.Send(cmd, ct)).ToActionResult();
 
     [HttpPost("{id:guid}/user-invite")]
     public async Task<IActionResult> CreateUserInvite(Guid id, [FromBody] CreateInviteCommand cmd, CancellationToken ct)

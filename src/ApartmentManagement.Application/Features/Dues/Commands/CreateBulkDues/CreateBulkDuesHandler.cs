@@ -25,7 +25,8 @@ public class CreateBulkDuesHandler : IRequestHandler<CreateBulkDuesCommand, Resu
 
         var period = new DateTime(request.Period.Year, request.Period.Month, 1);
 
-        var apartmentsQuery = _db.Apartments.AsNoTracking().Where(d => d.TenantId == tenantId);
+        var apartmentsQuery = _db.Apartments.AsNoTracking()
+            .Where(d => d.TenantId == tenantId && d.OccupancyStatus != OccupancyStatus.Vacant);
         if (request.BuildingId.HasValue)
             apartmentsQuery = apartmentsQuery.Where(d => d.BuildingId == request.BuildingId.Value);
 

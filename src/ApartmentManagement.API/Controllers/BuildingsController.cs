@@ -1,6 +1,7 @@
 using ApartmentManagement.API.Extensions;
 using ApartmentManagement.Application.Features.Buildings.Commands.CreateBuilding;
 using ApartmentManagement.Application.Features.Buildings.Commands.DeleteBuilding;
+using ApartmentManagement.Application.Features.Buildings.Commands.DeleteBuildingsBatch;
 using ApartmentManagement.Application.Features.Buildings.Commands.UpdateBuilding;
 using ApartmentManagement.Application.Features.Buildings.Queries.GetBuildingById;
 using ApartmentManagement.Application.Features.Buildings.Queries.GetBuildingApartments;
@@ -38,6 +39,10 @@ public class BuildingsController : BaseController
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
         => (await Sender.Send(new DeleteBuildingCommand(id), ct)).ToActionResult();
+
+    [HttpDelete("batch")]
+    public async Task<IActionResult> DeleteBatch([FromBody] DeleteBuildingsBatchCommand cmd, CancellationToken ct)
+        => (await Sender.Send(cmd, ct)).ToActionResult();
 
     [HttpGet("{id:guid}/apartments")]
     public async Task<IActionResult> Apartments(Guid id, CancellationToken ct)

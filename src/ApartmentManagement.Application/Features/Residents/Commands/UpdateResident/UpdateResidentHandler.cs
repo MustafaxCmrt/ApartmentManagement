@@ -56,6 +56,27 @@ public class UpdateResidentHandler : IRequestHandler<UpdateResidentCommand, Resu
         resident.MoveOutDate = request.MoveOutDate;
         resident.IsPrimaryContact = request.IsPrimaryContact;
 
+        var activeTypes = await _db.Residents
+            .Where(s => s.ApartmentId == resident.ApartmentId && s.MoveOutDate == null)
+            .Select(s => new { s.Id, s.ResidentType })
+            .ToListAsync(ct);
+
+        var updatedActiveTypes = activeTypes
+            .Where(s => s.Id != resident.Id)
+            .Select(s => s.ResidentType)
+            .Concat(request.MoveOutDate == null ? new[] { residentType } : Array.Empty<ResidentType>())
+            .ToList();
+
+        var apartment = await _db.Apartments.FirstOrDefaultAsync(d => d.Id == resident.ApartmentId, ct);
+        if (apartment is not null)
+        {
+            apartment.OccupancyStatus = updatedActiveTypes.Any(t => t == ResidentType.Owner)
+                ? OccupancyStatus.Occupied
+                : updatedActiveTypes.Any(t => t == ResidentType.Tenant)
+                    ? OccupancyStatus.Rented
+                    : OccupancyStatus.Vacant;
+        }
+
         await _db.SaveChangesAsync(ct);
         return Result.Success();
     }

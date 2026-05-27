@@ -28,6 +28,9 @@ public class CreateDueHandler : IRequestHandler<CreateDueCommand, Result<DueDto>
         if (apartment is null)
             return Result<DueDto>.Failure(Error.NotFound("Apartment"));
 
+        if (apartment.OccupancyStatus == OccupancyStatus.Vacant)
+            return Result<DueDto>.Failure(Error.Validation("Cannot create a due for a vacant apartment."));
+
         var period = new DateTime(request.Period.Year, request.Period.Month, 1);
 
         var exists = await _db.Dues

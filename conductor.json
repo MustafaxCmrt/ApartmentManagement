@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "setup": "dotnet restore ApartmentManagement.sln",
+    "run": "dotnet build ApartmentManagement.sln"
+  }
+}
