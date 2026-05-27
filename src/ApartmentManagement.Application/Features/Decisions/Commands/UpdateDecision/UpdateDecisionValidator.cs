@@ -19,5 +19,10 @@ public class UpdateDecisionValidator : AbstractValidator<UpdateDecisionCommand>
             .When(x => x.RejectionVotes.HasValue);
         RuleFor(x => x.AbstentionVotes).GreaterThanOrEqualTo(0).WithMessage("{PropertyName} negatif olamaz.")
             .When(x => x.AbstentionVotes.HasValue);
+
+        RuleFor(x => x).Must(x =>
+                (x.ApprovalVotes ?? 0) + (x.RejectionVotes ?? 0) + (x.AbstentionVotes ?? 0) <= x.VotersCount!.Value)
+            .WithMessage("Kabul, Ret ve Çekimser oyların toplamı, Toplam oy sayısından fazla olamaz.")
+            .When(x => x.VotersCount.HasValue);
     }
 }
